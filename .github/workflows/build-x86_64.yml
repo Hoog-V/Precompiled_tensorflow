@@ -1,0 +1,33 @@
+name: build-x86_64
+on:
+  push:
+    branches:
+      - master
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow
+      - run: git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag
+      - run: sudo apt-get -y install cmake gcc ninja-build zip
+      - run: cmake -S tensorflow/lite -B build -G Ninja -DBUILD_SHARED_LIBS=ON
+      - run: cmake --build build -j
+      - run: mkdir -p ../package/lib ../package/inc/tensorflow/lite
+      - run: cp -r build/flatbuffers/include/* ../package/inc
+      - run: cp -r tensorflow/lite/* ../package/inc/tensorflow/lite
+      - run: cp build/*.so ../package/lib/
+      - run: cp ../cmake/CMakeLists.txt ../package/
+      - run: cd ..
+      - run: rm -r package/inc/tensorflow/lite/{testing,java,ios,objc,python,tools,swift,examples}
+      - run: find package/inc/tensorflow -type f ! -name "*.h" ! -name "*.hpp" ! -name "*.c" ! -name "*.cc" ! -name "*.cpp" -delete
+      - run: find package/inc/tensorflow -type d -empty -delete
+      - name: Zip it up
+        run: cd package && zip -r ../tensorflow_precompiled_x86_64.zip * && cd ..
+      - name: Upload Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run:
+          gh release upload &tag tensorflow_precompiled_x86_64.zip
