@@ -2,7 +2,7 @@ name: build-x86_64
 on:
   push:
     branches:
-      - master
+      - main
 permissions:
   contents: write
 jobs:
