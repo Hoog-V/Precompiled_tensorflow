@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow
-      - run: git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag
+      - run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag
       - run: sudo apt-get -y install cmake gcc ninja-build zip
       - run: cmake -S tensorflow/lite -B build -G Ninja -DBUILD_SHARED_LIBS=ON
       - run: cmake --build build -j
