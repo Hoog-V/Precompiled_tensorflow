@@ -24,6 +24,7 @@ jobs:
       - run: cp -r tensorflow/lite/* ../package/inc/tensorflow/lite
         working-directory: ./tensorflow
       - run: cp build/*.so ../package/lib/
+        working-directory: ./tensorflow
       - run: cp cmake/CMakeLists.txt package/
       - run: rm -r package/inc/tensorflow/lite/{testing,java,ios,objc,python,tools,swift,examples}
       - run: find package/inc/tensorflow -type f ! -name "*.h" ! -name "*.hpp" ! -name "*.c" ! -name "*.cc" ! -name "*.cpp" -delete
