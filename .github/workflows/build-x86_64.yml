@@ -12,29 +12,28 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4.1.1
-      - run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag && echo "$tag" > ../tag.txt
-      - run: sudo apt-get -y install cmake gcc ninja-build zip
+      - name: Clone the tensorflow library & checkout to latest tag
+        run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag && echo "$tag" > ../tag.txt
+      - name: Install prerequisite packages (Bazel & zip)
+        run: sudo apt install apt-transport-https curl gnupg -y && curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor >bazel-archive-keyring.gpg && sudo mv bazel-archive-keyring.gpg /usr/share/keyrings && sudo apt update && sudo apt-get -y install zip bazel-6.5.0
+      - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
-      - run: cmake -S tensorflow/lite -B build -G Ninja -DBUILD_SHARED_LIBS=ON
+        run: LD_BIND_NOW=1 bazel build //tensorflow/lite:libtensorflowlite.so
+      - name: Assemble package
         working-directory: ./tensorflow
-      - run: cmake --build build -j
-        working-directory: ./tensorflow
-      - run: mkdir -p ../package/lib ../package/inc/tensorflow/lite
-        working-directory: ./tensorflow
-      - run: cp -r build/flatbuffers/include/* ../package/inc
-        working-directory: ./tensorflow
-      - run: cp -r tensorflow/lite/* ../package/inc/tensorflow/lite
-        working-directory: ./tensorflow
-      - run: cp build/*.so ../package/lib/
-        working-directory: ./tensorflow
-      - run: cp cmake/CMakeLists.txt package/
-      - run: rm -r package/inc/tensorflow/lite/{testing,java,ios,objc,python,tools,swift,examples}
-      - run: find package/inc/tensorflow -type f ! -name "*.h" ! -name "*.hpp" ! -name "*.c" ! -name "*.cc" ! -name "*.cpp" -delete
-      - run: find package/inc/tensorflow -type d -empty -delete
+        run: mkdir -p ../package/lib ../package/inc/tensorflow/lite
+        run: cp -r bazel-tensorflow/external/flatbuffers/include/* ../package/inc
+        run: cp -r tensorflow/lite/* ../package/inc/tensorflow/lite
+        run: cp bazel-out/k8-opt/bin/tensorflow/lite/libtensorflowlite.so ../package/lib/
+      - name: Clean up the includes (Remove unneeded files)
+        run: cp cmake/CMakeLists.txt package/
+        run: rm -r package/inc/tensorflow/lite/{testing,java,ios,objc,python,tools,swift,examples}
+        run: find package/inc/tensorflow -type f ! -name "*.h" ! -name "*.hpp" ! -name "*.c" ! -name "*.cc" ! -name "*.cpp" -delete
+        run: find package/inc/tensorflow -type d -empty -delete
       - name: Zip it up
-        run: cd package && zip -r ../tensorflow_precompiled_x86_64.zip * && cd ..
+        run: cd package && zip -r ../tensorflow_precompiled_generic_x86_64.zip * && cd ..
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
-          gh release upload $(cat tag.txt) tensorflow_precompiled_x86_64.zip
+          gh release upload $(cat tag.txt) tensorflow_precompiled_generic_x86_64.zip
