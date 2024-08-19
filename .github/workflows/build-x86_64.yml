@@ -8,12 +8,12 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    compiler: gcc
+    gcc: 13
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4.1.1
-      - name: Uninstall current GCC and install GCC13
-        run: sudo apt-get remove gcc && sudo apt-get install gcc-13
       - name: Install prerequisite packages (Bazel & zip)
         run: sudo apt install apt-transport-https curl gnupg -y && curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor >bazel-archive-keyring.gpg && sudo mv bazel-archive-keyring.gpg /usr/share/keyrings && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list && sudo apt update && sudo apt-get -y install zip bazel-6.5.0
       - name: Clone the tensorflow library & checkout to latest tag
