@@ -18,7 +18,7 @@ jobs:
         run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag && echo "$tag" > ../tag.txt
       - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
-        run: CC_OPT_FLAGS="-march=native -mno-avx512f" bazel build //tensorflow/lite:libtensorflowlite.so -c opt --copt=-mno-avx512f --cxxopt=-mno-avx512f
+        run: bazel build //tensorflow/lite:libtensorflowlite.so -c opt --copt=-mssse3 --copt=-mcx16 --copt=-msse4.1 --copt=-msse4.2 --copt=-mpopcnt --copt=-mno-fma4 --copt=-mno-avx --copt=-mno-avx2 --copt=-mno-avx512f --copt=-march=skylake
       - name: Assemble package
         working-directory: ./tensorflow
         run: mkdir -p ../package/lib ../package/inc/tensorflow/lite
