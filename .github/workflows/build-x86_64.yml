@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag
-      - run: sudo apt-get -y install cmake gcc ninja-build zip
+      - run: echo $tag && sudo apt-get -y install cmake gcc ninja-build zip
         working-directory: ./tensorflow
       - run: cmake -S tensorflow/lite -B build -G Ninja -DBUILD_SHARED_LIBS=ON
         working-directory: ./tensorflow
@@ -35,4 +35,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
-          gh release upload &tag tensorflow_precompiled_x86_64.zip
+          gh release upload $tag tensorflow_precompiled_x86_64.zip
