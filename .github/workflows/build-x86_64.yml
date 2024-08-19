@@ -8,6 +8,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4.1.1
       - run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag && echo "$tag" > ../tag.txt
