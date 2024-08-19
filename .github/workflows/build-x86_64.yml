@@ -22,13 +22,22 @@ jobs:
       - name: Assemble package
         working-directory: ./tensorflow
         run: mkdir -p ../package/lib ../package/inc/tensorflow/lite
+      - name: Copy include files from flatbuffers into new package
+        working-directory: ./tensorflow
         run: cp -r bazel-tensorflow/external/flatbuffers/include/* ../package/inc
+      - name: Copy include files from tensorflow lite into new package
+        working-directory: ./tensorflow
         run: cp -r tensorflow/lite/* ../package/inc/tensorflow/lite
+      - name: Copy dynamic library file (.so) from bazel build dir to new package
+        working-directory: ./tensorflow
         run: cp bazel-out/k8-opt/bin/tensorflow/lite/libtensorflowlite.so ../package/lib/
-      - name: Clean up the includes (Remove unneeded files)
+      - name: Copy template CMakeLists.txt to new package
         run: cp cmake/CMakeLists.txt package/
+      - name: Remove other language bindings/examples/docs from the include directory
         run: rm -r package/inc/tensorflow/lite/{testing,java,ios,objc,python,tools,swift,examples}
-        run: find package/inc/tensorflow -type f ! -name "*.h" ! -name "*.hpp" ! -name "*.c" ! -name "*.cc" ! -name "*.cpp" -delete
+      - name: Strip the tensorflow lite include dir (so that it only contains header files)
+        run: find package/inc/tensorflow -type f ! -name "*.h" ! -name "*.hpp" -delete
+      - name: Remove empty folders
         run: find package/inc/tensorflow -type d -empty -delete
       - name: Zip it up
         run: cd package && zip -r ../tensorflow_precompiled_generic_x86_64.zip * && cd ..
