@@ -5,8 +5,6 @@ cmake_policy(SET CMP0028 NEW)
 cmake_policy(SET CMP0042 NEW)
 project(tensorflow-lite C CXX)
 
-add_library(Eigen3::Eigen INTERFACE)
-
 add_library(tensorflow-lite INTERFACE)
 
 target_include_directories(tensorflow-lite INTERFACE ${CMAKE_CURRENT_LIST_DIR}/inc)
