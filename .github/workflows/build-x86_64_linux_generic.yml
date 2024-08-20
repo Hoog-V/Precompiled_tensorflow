@@ -15,7 +15,7 @@ jobs:
       - name: Install prerequisite packages (Bazel & zip)
         run: sudo apt install apt-transport-https curl gnupg gcc-13 g++-13 -y && curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor >bazel-archive-keyring.gpg && sudo mv bazel-archive-keyring.gpg /usr/share/keyrings && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list && sudo apt update && sudo apt-get -y install zip bazel-6.5.0
       - name: Clone the tensorflow library & checkout to latest tag
-        run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag && echo "$tag" > ../tag.txt
+        run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag
       - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
         run: bazel build //tensorflow/lite:libtensorflowlite.so -c opt --copt=-mssse3 --copt=-mcx16 --copt=-msse4.1 --copt=-msse4.2 --copt=-mpopcnt --copt=-mno-fma4 --copt=-mno-avx --copt=-mno-avx2 --copt=-mno-avx512f --copt=-march=skylake --copt=-DXNN_ENABLE_AVX512AMX=0 --copt=-DXNN_ENABLE_AVX512F16=0  --cxxopt=-DXNN_ENABLE_AVX512AMX=0 --cxxopt=-DXNN_ENABLE_AVX512F16=0 --copt=-DRUY_PLATFORM_AVX512=0  --copt=-mno-avx512fp16 --copt=-mno-avx512bf16
