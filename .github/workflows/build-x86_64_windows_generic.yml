@@ -34,7 +34,7 @@ jobs:
 
       - name: Copy dynamic library file (.dll) from bazel build dir to new package
         working-directory: ./tensorflow
-        run: Copy-Item -Path bazel-out/k8-opt/bin/tensorflow/lite/libtensorflowlite.dll -Destination ../package/lib/
+        run: Copy-Item -Path bazel-out/x64_windows-opt/bin/tensorflow/lite/libtensorflowlite.dll -Destination ../package/lib/
 
       - name: Copy template CMakeLists.txt to new package
         run: Copy-Item -Path cmake/CMakeLists.txt -Destination package/
