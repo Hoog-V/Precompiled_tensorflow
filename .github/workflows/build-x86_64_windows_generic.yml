@@ -49,7 +49,7 @@ jobs:
         run: Get-ChildItem -Path package/inc/tensorflow -Recurse -Directory | Where-Object { $_.GetFileSystemInfos().Count -eq 0 } | Remove-Item -Force
 
       - name: Zip it up
-        run: Compress-Archive -Path package/* -DestinationPath ../tensorflow_windows_vs19_avx2_x86_64.zip
+        run: Compress-Archive -Path package/* -DestinationPath ./tensorflow_windows_vs19_avx2_x86_64.zip
 
       - name: Upload Release Asset
         env:
