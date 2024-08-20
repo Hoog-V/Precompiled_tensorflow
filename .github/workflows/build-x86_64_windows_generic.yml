@@ -19,7 +19,7 @@ jobs:
           python-version: '>3.10'
       - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
-        run: bazel build //tensorflow/lite:tensorflowlite.dll -c opt --copt=/O2 --copt=/arch:AVX2 --copt=/D_XNN_ENABLE_AVX512AMX=0 --copt=/D_XNN_ENABLE_AVX512F16=0 --cxxopt=/D_XNN_ENABLE_AVX512AMX=0 --cxxopt=/D_XNN_ENABLE_AVX512F16=0 --copt=/D_RUY_PLATFORM_AVX512=0 --cxxopt=/std:c++20
+        run: bazel build //tensorflow/lite:tensorflowlite.dll -c opt --copt=/O2 --copt=/arch:AVX2 --copt=/D_XNN_ENABLE_AVX512AMX=0 --copt=/D_XNN_ENABLE_AVX512F16=0 --cxxopt=/D_XNN_ENABLE_AVX512AMX=0 --cxxopt=/D_XNN_ENABLE_AVX512F16=0 --copt=/D_RUY_PLATFORM_AVX512=0 --cxxopt=/std:c++20 --config=win_clang
       - name: Assemble package
         working-directory: ./tensorflow
         run: New-Item -ItemType Directory -Force -Path ../package/lib, ../package/inc/tensorflow/lite
