@@ -18,7 +18,7 @@ jobs:
      
       - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
-        run: bazel build //tensorflow/lite:libtensorflowlite.dll -c opt --copt=/O2 --copt=/arch:AVX2 --copt=/D_XNN_ENABLE_AVX512AMX=0 --copt=/D_XNN_ENABLE_AVX512F16=0 --cxxopt=/D_XNN_ENABLE_AVX512AMX=0 --cxxopt=/D_XNN_ENABLE_AVX512F16=0 --copt=/D_RUY_PLATFORM_AVX512=0 --cxxopt=/std:c++20
+        run: bazel build //tensorflow/lite:tensorflowlite.dll -c opt --copt=/O2 --copt=/arch:AVX2 --copt=/D_XNN_ENABLE_AVX512AMX=0 --copt=/D_XNN_ENABLE_AVX512F16=0 --cxxopt=/D_XNN_ENABLE_AVX512AMX=0 --cxxopt=/D_XNN_ENABLE_AVX512F16=0 --copt=/D_RUY_PLATFORM_AVX512=0 --cxxopt=/std:c++20
      
       - name: Assemble package
         working-directory: ./tensorflow
@@ -34,7 +34,7 @@ jobs:
 
       - name: Copy dynamic library file (.dll) from bazel build dir to new package
         working-directory: ./tensorflow
-        run: dir; dir .\bazel-out; dir .\bazel-out\x64_windows-opt; dir .\bazel-out\x64_windows-opt\bin; dir .\bazel-out\x64_windows-opt\bin\tensorflow\lite; Copy-Item -Path ./bazel-out/x64_windows-opt/bin/tensorflow/lite/libtensorflowlite.dll -Destination ../package/lib/
+        run: dir; dir .\bazel-out; dir .\bazel-out\x64_windows-opt; dir .\bazel-out\x64_windows-opt\bin; dir .\bazel-out\x64_windows-opt\bin\tensorflow\lite; Copy-Item -Path ./bazel-out/x64_windows-opt/bin/tensorflow/lite/tensorflowlite.dll -Destination ../package/lib/
 
       - name: Copy template CMakeLists.txt to new package
         run: Copy-Item -Path cmake/CMakeLists.txt -Destination package/
