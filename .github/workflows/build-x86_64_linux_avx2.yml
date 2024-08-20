@@ -1,4 +1,4 @@
-name: build-x86_64
+name: Build-x86_64-Linux-AVX2
 on:
   push:
     branches:
@@ -19,7 +19,7 @@ jobs:
         run: git clone https://github.com/tensorflow/tensorflow && cd tensorflow && git fetch --tags && tag=$(git describe --tags `git rev-list --tags --max-count=1`) && git checkout $tag && echo "$tag" > ../tag.txt
       - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
-        run: bazel build //tensorflow/lite:libtensorflowlite.so -c opt --copt=-mssse3 --copt=-mcx16 --copt=-msse4.1 --copt=-msse4.2 --copt=-mpopcnt --copt=-mno-fma4 --copt=-mno-avx --copt=-mno-avx2 --copt=-mno-avx512f --copt=-march=skylake --copt=-DXNN_ENABLE_AVX512AMX=0 --copt=-DXNN_ENABLE_AVX512F16=0  --cxxopt=-DXNN_ENABLE_AVX512AMX=0 --cxxopt=-DXNN_ENABLE_AVX512F16=0 --copt=-DRUY_PLATFORM_AVX512=0  --copt=-mno-avx512fp16 --copt=-mno-avx512bf16
+        run: bazel build //tensorflow/lite:libtensorflowlite.so -c opt --copt=-mssse3 --copt=-mcx16 --copt=-msse4.1 --copt=-msse4.2 --copt=-mpopcnt --copt=-mno-fma4 --copt=-mno-avx512f --copt=-march=haswell --copt=-DXNN_ENABLE_AVX512AMX=0 --copt=-DXNN_ENABLE_AVX512F16=0  --cxxopt=-DXNN_ENABLE_AVX512AMX=0 --cxxopt=-DXNN_ENABLE_AVX512F16=0 --copt=-DRUY_PLATFORM_AVX512=0  --copt=-mno-avx512fp16 --copt=-mno-avx512bf16
       - name: Assemble package
         working-directory: ./tensorflow
         run: mkdir -p ../package/lib ../package/inc/tensorflow/lite
@@ -41,9 +41,9 @@ jobs:
       - name: Remove empty folders
         run: find package/inc/tensorflow -type d -empty -delete
       - name: Zip it up
-        run: cd package && zip -r ../tensorflow_precompiled_generic_x86_64.zip * && cd ..
+        run: cd package && zip -r ../tensorflow_linux_avx2_x86_64.zip * && cd ..
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
-          gh release upload $(cat tag.txt) tensorflow_precompiled_generic_x86_64.zip
+          gh release upload $(cat tag.txt) tensorflow_linux_avx2_x86_64.zip
