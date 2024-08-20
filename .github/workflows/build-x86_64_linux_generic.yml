@@ -1,8 +1,7 @@
 name: Build-x86_64-Linux-Generic
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [created]
 permissions:
   contents: write
 jobs:
@@ -46,4 +45,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
-          gh release upload $(cat tag.txt) tensorflow_linux_generic_x86_64.zip
+          gh release upload $(gh release view --repo Hoog-V/Precompiled_tensorflow --json tagName --jq ".tagName") tensorflow_linux_generic_x86_64.zip

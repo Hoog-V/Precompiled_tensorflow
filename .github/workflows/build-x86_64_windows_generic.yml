@@ -1,8 +1,7 @@
 name: Build-x86_64-Windows_generic
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [created]
 permissions:
   contents: write
 jobs:
@@ -14,8 +13,8 @@ jobs:
       - uses: actions/checkout@v4.1.1
      
       - name: Clone the tensorflow library & checkout to latest tag
-        run: git clone https://github.com/tensorflow/tensorflow; cd tensorflow; git fetch --tags; $tag = git describe --tags (git rev-list --tags --max-count=1); git checkout $tag; $tag | Out-File -FilePath ../tag.txt -Encoding utf8
-     
+        run: git clone https://github.com/tensorflow/tensorflow; git fetch --tags; $tag = git describe --tags (git rev-list --tags --max-count=1); git checkout $tag;
+        
       - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
         run: bazel build //tensorflow/lite:tensorflowlite.dll -c opt --copt=/O2 --copt=/arch:AVX2 --copt=/D_XNN_ENABLE_AVX512AMX=0 --copt=/D_XNN_ENABLE_AVX512F16=0 --cxxopt=/D_XNN_ENABLE_AVX512AMX=0 --cxxopt=/D_XNN_ENABLE_AVX512F16=0 --copt=/D_RUY_PLATFORM_AVX512=0 --cxxopt=/std:c++20
@@ -54,4 +53,5 @@ jobs:
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload (Get-Content tag.txt) tensorflow_windows_vs19_avx2_x86_64.zip
+        run: $tagname=(gh release view --repo Hoog-V/Precompiled_tensorflow --json tagName --jq ".tagName"
+); gh release upload $tagname tensorflow_windows_vs19_avx2_x86_64.zip
