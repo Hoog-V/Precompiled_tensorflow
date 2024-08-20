@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
      
       - name: Clone the tensorflow library & checkout to latest tag
-        run: git clone https://github.com/tensorflow/tensorflow; git fetch --tags; $tag = git describe --tags (git rev-list --tags --max-count=1); git checkout $tag;
+        run: git clone https://github.com/tensorflow/tensorflow; git fetch --tags; $tag = git describe --tags (git rev-list --tags --max-count=1); git checkout $tag
         
       - name: Build the tensorflow lite library using Bazel
         working-directory: ./tensorflow
@@ -53,5 +53,4 @@ jobs:
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: $tagname=(gh release view --repo Hoog-V/Precompiled_tensorflow --json tagName --jq ".tagName"
-); gh release upload $tagname tensorflow_windows_vs19_avx2_x86_64.zip
+        run: gh release upload (gh release view --repo Hoog-V/Precompiled_tensorflow --json tagName --jq ".tagName") tensorflow_windows_vs19_avx2_x86_64.zip
